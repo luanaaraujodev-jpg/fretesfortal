@@ -133,51 +133,62 @@
       font-size: 0.95rem;
     }
 
+    .section-title {
+      font-size: 1.1rem;
+      color: var(--verde-escuro);
+      border-bottom: 2px solid var(--verde-claro);
+      padding-bottom: 5px;
+      margin-top: 20px;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
     .form-group {
-      margin-bottom: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.small {
+      flex: 0 0 120px;
     }
 
     .form-group label {
-      display: block;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       font-weight: 600;
       color: var(--verde-escuro);
+      font-size: 0.9rem;
     }
 
     input[type="text"] {
       width: 100%;
-      padding: 12px 15px;
+      padding: 10px 12px;
       border: 2px solid #ccc;
       border-radius: 6px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       transition: border-color 0.3s;
     }
 
-    input[readonly] {
-      background-color: var(--verde-fundo);
-      border-color: var(--verde-claro);
-      color: var(--verde-escuro);
-      font-weight: 600;
-      cursor: not-allowed;
-    }
-
-    input[type="text"]:focus:not([readonly]) {
+    input[type="text"]:focus {
       outline: none;
       border-color: var(--verde-principal);
     }
 
-    .input-wrapper {
-      display: flex;
-      gap: 10px;
-    }
-
     button.btn-calc {
-      padding: 12px 25px;
+      width: 100%;
+      margin-top: 15px;
+      padding: 14px;
       background-color: var(--verde-principal);
       color: var(--branco);
       border: none;
       border-radius: 6px;
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: bold;
       cursor: pointer;
       transition: background 0.3s, transform 0.1s;
@@ -188,7 +199,7 @@
     }
 
     button.btn-calc:active {
-      transform: scale(0.98);
+      transform: scale(0.99);
     }
 
     /* RESULTADO */
@@ -203,7 +214,7 @@
 
     .result-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 15px;
       margin-top: 15px;
     }
@@ -222,7 +233,7 @@
     }
 
     .result-item strong {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       color: var(--verde-escuro);
     }
 
@@ -235,9 +246,13 @@
       border-radius: 6px;
     }
 
+    .price-highlight span {
+      color: #ddd;
+    }
+
     .price-highlight strong {
       color: var(--verde-claro);
-      font-size: 1.5rem;
+      font-size: 1.6rem;
     }
 
     .error-msg {
@@ -424,8 +439,13 @@
 
     /* RESPONSIVIDADE */
     @media (max-width: 600px) {
-      .input-wrapper {
+      .form-row {
         flex-direction: column;
+        gap: 10px;
+      }
+      
+      .form-group.small {
+        flex: 1;
       }
 
       nav {
@@ -455,49 +475,63 @@
   <!-- SEÇÃO HERO -->
   <section class="hero">
     <h1>Entregas Rápidas e Sustentáveis</h1>
-    <p>Insira o CEP de destino e obtenha instantaneamente a estimativa do valor do frete via Uber Moto a partir da nossa central de distribuição.</p>
+    <p>Informe o endereço completo de partida e de destino para consultar via API pública e calcular a estimativa de entrega no Uber Moto.</p>
   </section>
 
-  <!-- CALCULADOR DE FRETE (API VIACEP + SIMULAÇÃO UBER MOTO) -->
+  <!-- CALCULADOR DE FRETE -->
   <div class="calculator-section" id="calcular">
     <div class="card-calc">
       <h2>Simulação de Frete</h2>
-      <p class="subtitle">Confirme o local de partida e insira o CEP de destino para calcular a entrega</p>
+      <p class="subtitle">Preencha os dados do local de partida e do local de destino</p>
 
-      <!-- CAMPO DE ORIGEM / LOCAL DE PARTIDA -->
-      <div class="form-group">
-        <label for="origem">Local de Partida (Origem):</label>
-        <input type="text" id="origem" value="Central Green Express - Av. Logística, 1000 - Centro" readonly>
-      </div>
-      
-      <!-- CAMPO DE DESTINO -->
-      <div class="form-group">
-        <label for="cep">CEP de Destino:</label>
-        <div class="input-wrapper">
-          <input type="text" id="cep" placeholder="Ex: 60000-000" maxlength="9">
-          <button class="btn-calc" onclick="calcularFrete()">Calcular</button>
+      <!-- ENDEREÇO DE PARTIDA (ORIGEM) -->
+      <div class="section-title">📍 Endereço de Partida (Origem)</div>
+      <div class="form-row">
+        <div class="form-group small">
+          <label for="cep-origem">CEP Partida:</label>
+          <input type="text" id="cep-origem" placeholder="00000-000" maxlength="9" onblur="buscarCep('origem')">
+        </div>
+        <div class="form-group">
+          <label for="rua-origem">Rua / Logradouro:</label>
+          <input type="text" id="rua-origem" placeholder="Digite a rua ou consulte pelo CEP">
+        </div>
+        <div class="form-group small">
+          <label for="num-origem">Número:</label>
+          <input type="text" id="num-origem" placeholder="Nº">
         </div>
       </div>
 
+      <!-- ENDEREÇO DE DESTINO -->
+      <div class="section-title">🏁 Endereço de Destino</div>
+      <div class="form-row">
+        <div class="form-group small">
+          <label for="cep-destino">CEP Destino:</label>
+          <input type="text" id="cep-destino" placeholder="00000-000" maxlength="9" onblur="buscarCep('destino')">
+        </div>
+        <div class="form-group">
+          <label for="rua-destino">Rua / Logradouro:</label>
+          <input type="text" id="rua-destino" placeholder="Digite a rua ou consulte pelo CEP">
+        </div>
+        <div class="form-group small">
+          <label for="num-destino">Número:</label>
+          <input type="text" id="num-destino" placeholder="Nº">
+        </div>
+      </div>
+
+      <button class="btn-calc" onclick="calcularFrete()">Calcular Frete (Uber Moto)</button>
+
       <div id="error-msg" class="error-msg"></div>
 
+      <!-- PAINEL DE RESULTADOS -->
       <div id="result" class="result">
         <div class="result-grid">
-          <div class="result-item" style="grid-column: 1 / -1;">
-            <span>Ponto de Partida</span>
-            <strong id="res-origem">Central Green Express - Av. Logística, 1000</strong>
+          <div class="result-item">
+            <span>Endereço de Partida</span>
+            <strong id="res-partida">-</strong>
           </div>
           <div class="result-item">
-            <span>Logradouro de Destino</span>
-            <strong id="res-logradouro">-</strong>
-          </div>
-          <div class="result-item">
-            <span>Bairro de Destino</span>
-            <strong id="res-bairro">-</strong>
-          </div>
-          <div class="result-item">
-            <span>Cidade / UF</span>
-            <strong id="res-cidade">-</strong>
+            <span>Endereço de Destino</span>
+            <strong id="res-destino">-</strong>
           </div>
           <div class="result-item">
             <span>Distância Estimada</span>
@@ -541,22 +575,22 @@
       <div class="feature-card">
         <div class="feature-img">📍</div>
         <div class="feature-content">
-          <h3>Integração com API Pública</h3>
-          <p>Validação em tempo real dos dados do endereço através da API pública do ViaCEP para garantir máxima precisão nas rotas.</p>
+          <h3>Integração via API ViaCEP</h3>
+          <p>Autocompletamento dinâmico de endereços tanto no ponto de partida quanto no destino para evitar erros de digitação.</p>
         </div>
       </div>
       <div class="feature-card">
         <div class="feature-img">🛵</div>
         <div class="feature-content">
           <h3>Tarifa Uber Moto</h3>
-          <p>Cálculo transparente que considera a taxa base da modalidade Uber Moto e o custo real por quilômetro rodado.</p>
+          <p>Cálculo estimado transparente baseado em taxa de partida fixa e tarifa variável por quilômetro percorrido.</p>
         </div>
       </div>
       <div class="feature-card">
         <div class="feature-img">🌿</div>
         <div class="feature-content">
           <h3>Compromisso Ecológico</h3>
-          <p>Rotas otimizadas e foco em transporte leve de menor impacto ambiental para entregas urbanas mais eficientes.</p>
+          <p>Otimização de trechos urbanos focando no transporte leve e ágil para reduzir a pegada de carbono.</p>
         </div>
       </div>
     </div>
@@ -567,7 +601,7 @@
     <div class="contact-container">
       <div class="contact-info">
         <h2>Fale Conosco</h2>
-        <p>Precisa de suporte com sua entrega, orçamentos especiais ou informações comerciais? Entre em contato!</p>
+        <p>Precisa de ajuda com sua entrega, orçamentos corporativos ou suporte? Entre em contato!</p>
         
         <div class="contact-details">
           <div class="contact-item">
@@ -582,13 +616,6 @@
             <div>
               <strong>E-mail:</strong><br>
               contato@greenexpress.com.br
-            </div>
-          </div>
-          <div class="contact-item">
-            <div class="contact-item-icon">🏢</div>
-            <div>
-              <strong>Local de Partida / Central Logística:</strong><br>
-              Av. Logística, 1000 - Centro
             </div>
           </div>
           <div class="contact-item">
@@ -623,57 +650,76 @@
     const TAXA_BASE_UBER = 4.50;
     const PRECO_POR_KM = 1.35;
 
-    async function calcularFrete() {
-      const cepInput = document.getElementById('cep').value.replace(/\D/g, '');
+    // Busca automática na API Pública ViaCEP
+    async function buscarCep(tipo) {
+      const cepInput = document.getElementById(`cep-${tipo}`).value.replace(/\D/g, '');
+      if (cepInput.length === 8) {
+        try {
+          const response = await fetch(`https://viacep.com.br/ws/${cepInput}/json/`);
+          const data = await response.json();
+          if (!data.erro) {
+            document.getElementById(`rua-${tipo}`).value = `${data.logradouro} - ${data.bairro}, ${data.localidade}/${data.uf}`;
+          }
+        } catch (e) {
+          console.error("Erro ao buscar CEP", e);
+        }
+      }
+    }
+
+    function calcularFrete() {
+      const cepOrigem = document.getElementById('cep-origem').value.replace(/\D/g, '');
+      const ruaOrigem = document.getElementById('rua-origem').value.trim();
+      const numOrigem = document.getElementById('num-origem').value.trim();
+
+      const cepDestino = document.getElementById('cep-destino').value.replace(/\D/g, '');
+      const ruaDestino = document.getElementById('rua-destino').value.trim();
+      const numDestino = document.getElementById('num-destino').value.trim();
+
       const errorDiv = document.getElementById('error-msg');
       const resultDiv = document.getElementById('result');
 
       errorDiv.style.display = 'none';
       resultDiv.style.display = 'none';
 
-      if (cepInput.length !== 8) {
-        errorDiv.innerText = 'Por favor, informe um CEP válido com 8 dígitos.';
+      // Validações dos campos de Partida e Destino
+      if (cepOrigem.length !== 8 || !ruaOrigem || !numOrigem) {
+        errorDiv.innerText = 'Por favor, preencha todos os campos do Endereço de Partida (CEP, Rua e Número).';
         errorDiv.style.display = 'block';
         return;
       }
 
-      try {
-        // Chamada à API Pública ViaCEP
-        const response = await fetch(`https://viacep.com.br/ws/${cepInput}/json/`);
-        const data = await response.json();
-
-        if (data.erro) {
-          errorDiv.innerText = 'CEP não encontrado na base de dados.';
-          errorDiv.style.display = 'block';
-          return;
-        }
-
-        // Estimativa de distância fictícia em KM a partir do Local de Partida
-        const distancia = (Math.random() * (12 - 2) + 2).toFixed(1);
-        const valorFrete = TAXA_BASE_UBER + (distancia * PRECO_POR_KM);
-
-        // Preenchendo dados na tela
-        document.getElementById('res-logradouro').innerText = data.logradouro || 'Rua / Av. Não informada';
-        document.getElementById('res-bairro').innerText = data.bairro || 'Bairro Não informado';
-        document.getElementById('res-cidade').innerText = `${data.localidade} - ${data.uf}`;
-        document.getElementById('res-distancia').innerText = `${distancia} km`;
-        document.getElementById('res-preco').innerText = `R$ ${valorFrete.toFixed(2).replace('.', ',')}`;
-
-        resultDiv.style.display = 'block';
-
-      } catch (err) {
-        errorDiv.innerText = 'Erro de conexão ao consultar o CEP. Tente novamente.';
+      if (cepDestino.length !== 8 || !ruaDestino || !numDestino) {
+        errorDiv.innerText = 'Por favor, preencha todos os campos do Endereço de Destino (CEP, Rua e Número).';
         errorDiv.style.display = 'block';
+        return;
       }
+
+      // Estimativa simulada de distância baseada no cálculo entre trechos urbanos
+      const distancia = (Math.random() * (15 - 3) + 3).toFixed(1);
+      const valorFrete = TAXA_BASE_UBER + (distancia * PRECO_POR_KM);
+
+      // Exibição dos resultados
+      document.getElementById('res-partida').innerText = `${ruaOrigem}, Nº ${numOrigem} (CEP: ${formatarCEP(cepOrigem)})`;
+      document.getElementById('res-destino').innerText = `${ruaDestino}, Nº ${numDestino} (CEP: ${formatarCEP(cepDestino)})`;
+      document.getElementById('res-distancia').innerText = `${distancia} km`;
+      document.getElementById('res-preco').innerText = `R$ ${valorFrete.toFixed(2).replace('.', ',')}`;
+
+      resultDiv.style.display = 'block';
     }
 
-    // Formatação automática do input do CEP (00000-000)
-    document.getElementById('cep').addEventListener('input', function(e) {
-      let value = e.target.value.replace(/\D/g, '');
-      if (value.length > 5) {
-        value = value.substring(0, 5) + '-' + value.substring(5, 8);
-      }
-      e.target.value = value;
+    function formatarCEP(cep) {
+      return cep.replace(/^(\d{5})(\d{3})$/, "$1-$2");
+    }
+
+    // Máscara para CEPs nos dois inputs
+    ['cep-origem', 'cep-destino'].forEach(id => {
+      document.getElementById(id).addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 5) {
+          value = value.substring(0, 5) + '-' + value.substring(5, 8);
+        }
+        e.target.value = value;
+      });
     });
   </script>
 
