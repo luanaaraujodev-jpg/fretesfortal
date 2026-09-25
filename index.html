@@ -144,13 +144,8 @@
       color: var(--verde-escuro);
     }
 
-    .input-wrapper {
-      display: flex;
-      gap: 10px;
-    }
-
     input[type="text"] {
-      flex: 1;
+      width: 100%;
       padding: 12px 15px;
       border: 2px solid #ccc;
       border-radius: 6px;
@@ -158,9 +153,22 @@
       transition: border-color 0.3s;
     }
 
-    input[type="text"]:focus {
+    input[readonly] {
+      background-color: var(--verde-fundo);
+      border-color: var(--verde-claro);
+      color: var(--verde-escuro);
+      font-weight: 600;
+      cursor: not-allowed;
+    }
+
+    input[type="text"]:focus:not([readonly]) {
       outline: none;
       border-color: var(--verde-principal);
+    }
+
+    .input-wrapper {
+      display: flex;
+      gap: 10px;
     }
 
     button.btn-calc {
@@ -214,7 +222,7 @@
     }
 
     .result-item strong {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: var(--verde-escuro);
     }
 
@@ -447,15 +455,22 @@
   <!-- SEÇÃO HERO -->
   <section class="hero">
     <h1>Entregas Rápidas e Sustentáveis</h1>
-    <p>Insira o CEP de destino e obtenha instantaneamente a estimativa do valor do frete via Uber Moto a partir do nosso centro de distribuição.</p>
+    <p>Insira o CEP de destino e obtenha instantaneamente a estimativa do valor do frete via Uber Moto a partir da nossa central de distribuição.</p>
   </section>
 
   <!-- CALCULADOR DE FRETE (API VIACEP + SIMULAÇÃO UBER MOTO) -->
   <div class="calculator-section" id="calcular">
     <div class="card-calc">
       <h2>Simulação de Frete</h2>
-      <p class="subtitle">Insira o CEP para consultar a localização e estimar a distância de entrega</p>
+      <p class="subtitle">Confirme o local de partida e insira o CEP de destino para calcular a entrega</p>
+
+      <!-- CAMPO DE ORIGEM / LOCAL DE PARTIDA -->
+      <div class="form-group">
+        <label for="origem">Local de Partida (Origem):</label>
+        <input type="text" id="origem" value="Central Green Express - Av. Logística, 1000 - Centro" readonly>
+      </div>
       
+      <!-- CAMPO DE DESTINO -->
       <div class="form-group">
         <label for="cep">CEP de Destino:</label>
         <div class="input-wrapper">
@@ -468,12 +483,16 @@
 
       <div id="result" class="result">
         <div class="result-grid">
+          <div class="result-item" style="grid-column: 1 / -1;">
+            <span>Ponto de Partida</span>
+            <strong id="res-origem">Central Green Express - Av. Logística, 1000</strong>
+          </div>
           <div class="result-item">
-            <span>Logradouro</span>
+            <span>Logradouro de Destino</span>
             <strong id="res-logradouro">-</strong>
           </div>
           <div class="result-item">
-            <span>Bairro</span>
+            <span>Bairro de Destino</span>
             <strong id="res-bairro">-</strong>
           </div>
           <div class="result-item">
@@ -568,8 +587,8 @@
           <div class="contact-item">
             <div class="contact-item-icon">🏢</div>
             <div>
-              <strong>Central de Distribuição:</strong><br>
-              Av. Principal de Logística, 1000 - Centro
+              <strong>Local de Partida / Central Logística:</strong><br>
+              Av. Logística, 1000 - Centro
             </div>
           </div>
           <div class="contact-item">
@@ -629,7 +648,7 @@
           return;
         }
 
-        // Estimativa de distância fictícia em KM a partir do CD Green Express
+        // Estimativa de distância fictícia em KM a partir do Local de Partida
         const distancia = (Math.random() * (12 - 2) + 2).toFixed(1);
         const valorFrete = TAXA_BASE_UBER + (distancia * PRECO_POR_KM);
 
